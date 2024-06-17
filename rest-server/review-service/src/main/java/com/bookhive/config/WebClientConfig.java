@@ -1,4 +1,4 @@
-package com.bookhive.reviewservice.config;
+package com.bookhive.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

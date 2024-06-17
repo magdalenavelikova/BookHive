@@ -19,6 +19,8 @@
         <module>api-gateway</module>
         <module>discovery-server</module>
         <module>review-service</module>
+        <module>config-service</module>
+        <module>authentication-service</module>
     </modules>
 
     <properties>
