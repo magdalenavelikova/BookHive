@@ -1,4 +1,4 @@
-package com.bookhive.models;
+package com.bookhive.model;
 
 import lombok.Data;
 

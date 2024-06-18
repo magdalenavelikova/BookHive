@@ -9,9 +9,9 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="authentication-service" />
-        <module name="user-service" />
         <module name="discovery-server" />
         <module name="config-service" />
+        <module name="user-service" />
         <module name="review-service" />
       </profile>
     </annotationProcessing>

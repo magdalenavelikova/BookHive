@@ -1,4 +1,4 @@
-package com.bookhive.services;
+package com.bookhive.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

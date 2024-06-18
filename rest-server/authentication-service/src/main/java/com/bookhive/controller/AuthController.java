@@ -1,8 +1,8 @@
-package com.bookhive.controllers;
+package com.bookhive.controller;
 
-import com.bookhive.models.AuthRequest;
-import com.bookhive.models.AuthResponse;
-import com.bookhive.services.AuthService;
+import com.bookhive.model.AuthRequest;
+import com.bookhive.model.AuthResponse;
+import com.bookhive.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

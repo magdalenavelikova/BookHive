@@ -15,12 +15,12 @@
     <artifactId>rest-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>user-service</module>
         <module>api-gateway</module>
         <module>discovery-server</module>
         <module>review-service</module>
         <module>config-service</module>
         <module>authentication-service</module>
+        <module>user-service</module>
     </modules>
 
     <properties>
