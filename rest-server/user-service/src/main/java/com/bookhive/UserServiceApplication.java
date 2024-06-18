@@ -1,4 +1,4 @@
-package com.bookhive.userservice;
+package com.bookhive;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
