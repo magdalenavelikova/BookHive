@@ -1,5 +1,8 @@
 package com.bookhive.service;
 
+import com.bookhive.exception.UserNotFoundExceptionInLogin;
+import com.bookhive.exception.WrongPasswordExceptionInLogin;
+import com.bookhive.model.dto.UserLoginDTO;
 import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
 import com.bookhive.model.entities.UserEntity;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -66,5 +70,22 @@ public class UserService {
         }
 
 
+    }
+
+    public UserLoginDTO getUserCredentials(UserLoginDTO userLoginDTO) {
+        Optional<UserEntity> user = this.userRepository.findByUsername(userLoginDTO.getUsername());
+        if (user.isEmpty()) {
+            throw new UserNotFoundExceptionInLogin("User not found");
+        }
+        boolean isPasswordsMatch = passwordEncoder.matches(userLoginDTO.getPassword(),
+                user.get().getPassword());
+        if (!isPasswordsMatch) {
+            throw new WrongPasswordExceptionInLogin("Wrong Password");
+        }
+        userLoginDTO.setId(user.get().getId());
+        userLoginDTO.setUsername(user.get().getUsername());
+        Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
+        userLoginDTO.setRole(String.valueOf(role.get().getRole()));
+        return userLoginDTO;
     }
 }

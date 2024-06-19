@@ -2,6 +2,7 @@ package com.bookhive.controller;
 
 
 import com.bookhive.exception.UserNotFoundException;
+import com.bookhive.exception.UserNotFoundExceptionInLogin;
 import com.bookhive.exception.UserNotUniqueException;
 import com.bookhive.model.dto.UserErrorDto;
 import com.bookhive.model.exception.AppException;
@@ -42,6 +43,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(userErrorDto);
+    }
+
+    @ExceptionHandler(UserNotFoundExceptionInLogin.class)
+    public ResponseEntity<?> handleUserNotFoundExceptionInLogin(UserNotFoundExceptionInLogin exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
     @Override
