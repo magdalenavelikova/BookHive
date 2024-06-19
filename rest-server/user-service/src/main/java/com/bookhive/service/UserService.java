@@ -28,11 +28,11 @@ public class UserService {
         String password = passwordEncoder.encode(rowPassword);
         userEntity.setPassword(password);
         userEntity.setCreated(LocalDateTime.now());
+
         if (userRoleRepository.findByRole(Role.USER).isPresent()) {
             userEntity.setRole(userRoleRepository.findByRole(Role.USER).get());
         }
-
-        userEntity.setEnabled(true);
+        userEntity.setEnabled(false);
         UserEntity saved = userRepository.save(userEntity);
 
         UserVO userVO = userMapper.userEntityToUserVO(saved);

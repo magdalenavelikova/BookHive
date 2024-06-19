@@ -26,7 +26,7 @@ public class UserEntity extends BaseEntity {
     private String avatar;
     @Column(columnDefinition = "boolean default false")
     private boolean enabled;
-    @OneToOne
+    @ManyToOne
     private UserRoleEntity role;
 
 
