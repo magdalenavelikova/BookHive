@@ -19,18 +19,18 @@ public class AuthService {
 
     public AuthResponse register(AuthRequest request) {
        //TODO validation if user exists in DB
-        UserVO registeredUser = restTemplate.postForObject(LOGIN_URL, request, UserVO.class);
+        UserVO registeredUser = restTemplate.postForObject("http://user-service/users/register", request, UserVO.class);
         String accessToken = jwtService.generate(registeredUser.getId(),registeredUser.getUsername(), registeredUser.getRole(), "ACCESS");
         String refreshToken = jwtService.generate(registeredUser.getId(), registeredUser.getUsername(),registeredUser.getRole(), "REFRESH");
         return new AuthResponse(accessToken, refreshToken);
     }
 
-    public AuthResponse loginUser(AuthRequest request) throws Exception {
+    public AuthResponse loginUser(AuthRequest request) {
         String accessToken;
         String refreshToken;
         AuthResponse authResponse = new AuthResponse();
         try {
-            UserVO loginUser = restTemplate.postForObject("http://user-service/users/login", request,
+            UserVO loginUser = restTemplate.postForObject(LOGIN_URL, request,
                     UserVO.class);
             accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
                     loginUser.getRole(), "ACCESS");
