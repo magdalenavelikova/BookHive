@@ -16,9 +16,9 @@ public class JWTService {
 
     @Value("${jwt.secret}")
     private String jwtSigningKey;
-//    @Value("${jwt.expiration}")
+    //    @Value("${jwt.expiration}")
 //    private String expiration;
-    public static final long JWT_TOKEN_VALIDITY =30 * 24 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 30 * 24 * 60 * 60;
     private Key key;
 
     @PostConstruct
@@ -34,14 +34,14 @@ public class JWTService {
         return getClaims(token).getExpiration();
     }
 
-    public String generate(String userId, String role, String tokenType) {
-        Map<String, String> claims = Map.of("id", userId, "role", role);
-//        long expMillis = "ACCESS".equalsIgnoreCase(tokenType)
-//                ? Long.parseLong(expiration) * 1000
-//                : Long.parseLong(expiration) * 1000 * 5;
+    public String generate(String userId, String username, String role, String tokenType) {
+        Map<String, String> claims = Map.of("id", userId, "username", username, "role", role);
+        long expMillis = "ACCESS".equalsIgnoreCase(tokenType)
+                ? JWT_TOKEN_VALIDITY
+                : JWT_TOKEN_VALIDITY * 2;
 
         final Date now = new Date();
-        final Date exp = new Date(now.getTime() + JWT_TOKEN_VALIDITY);
+        final Date exp = new Date(now.getTime() + expMillis);
 
         return Jwts.builder()
                 .setClaims(claims)
