@@ -4,7 +4,11 @@ import com.bookhive.model.AuthRequest;
 import com.bookhive.model.AuthResponse;
 import com.bookhive.model.UserVO;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -24,12 +28,24 @@ public class AuthService {
         return new AuthResponse(accessToken, refreshToken);
     }
 
-    public AuthResponse loginUser(AuthRequest request) {
-        UserVO loginUser = restTemplate.postForObject("http://user-service/users/login", request, UserVO.class);
-        String accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
-                loginUser.getRole(), "ACCESS");
-        String refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
-                loginUser.getRole(), "REFRESH");
-        return new AuthResponse(accessToken, refreshToken);
+    public AuthResponse loginUser(AuthRequest request) throws Exception {
+        String accessToken;
+        String refreshToken;
+        AuthResponse authResponse = new AuthResponse();
+        try {
+            UserVO loginUser = restTemplate.postForObject("http://user-service/users/login", request,
+                    UserVO.class);
+            accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                    loginUser.getRole(), "ACCESS");
+            refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                    loginUser.getRole(), "REFRESH");
+            authResponse.setAccessToken(accessToken);
+            authResponse.setRefreshToken(refreshToken);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                authResponse.setAccessToken(e.getMessage());
+            }
+        }
+        return authResponse;
     }
 }
