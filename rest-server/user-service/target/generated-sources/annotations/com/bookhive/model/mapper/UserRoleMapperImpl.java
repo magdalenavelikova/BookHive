@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-06-18T13:47:53+0300",
+    date = "2024-06-18T16:46:28+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.9 (Oracle Corporation)"
 )
 @Component
@@ -20,6 +20,10 @@ public class UserRoleMapperImpl implements UserRoleMapper {
         }
 
         UserRoleDto userRoleDto = new UserRoleDto();
+
+        if ( userRoleEntity.getRole() != null ) {
+            userRoleDto.setRole( userRoleEntity.getRole().name() );
+        }
 
         return userRoleDto;
     }

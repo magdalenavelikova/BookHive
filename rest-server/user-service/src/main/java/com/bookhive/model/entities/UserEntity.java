@@ -1,5 +1,6 @@
 package com.bookhive.model.entities;
 
+import com.bookhive.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,12 +29,13 @@ public class UserEntity extends BaseEntity {
     private String city;
     @Column(columnDefinition = "boolean default false")
     private boolean enabled;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<UserRoleEntity> roles = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    private List<UserRoleEntity> roles = new ArrayList<>();
+    private Role role;
 
-    public void addRole(UserRoleEntity role) {
-        this.roles.add(role);
-    }
+//    public void addRole(UserRoleEntity role) {
+//        this.roles.add(role);
+//    }
 
     public String getFullName() {
         StringBuilder fullName = new StringBuilder();

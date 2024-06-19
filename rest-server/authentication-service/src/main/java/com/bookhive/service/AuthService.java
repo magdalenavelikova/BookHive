@@ -21,8 +21,8 @@ public class AuthService {
 
         UserVO registeredUser = restTemplate.postForObject("http://user-service/users/register", request, UserVO.class);
 
-        String accessToken = jwtService.generate(registeredUser.getId(), registeredUser.getRoles().get(0), "ACCESS");
-        String refreshToken = jwtService.generate(registeredUser.getId(), registeredUser.getRoles().get(0), "REFRESH");
+        String accessToken = jwtService.generate(registeredUser.getId(), registeredUser.getRole(), "ACCESS");
+        String refreshToken = jwtService.generate(registeredUser.getId(), registeredUser.getRole(), "REFRESH");
 
         return new AuthResponse(accessToken, refreshToken);
     }

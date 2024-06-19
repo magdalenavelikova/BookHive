@@ -14,7 +14,7 @@ public class UserVO {
     private String id;
     private String email;
     private String password;
-    private List<String> roles;
+    private String role;
     private String firstName;
     private String lastName;
     private String country;

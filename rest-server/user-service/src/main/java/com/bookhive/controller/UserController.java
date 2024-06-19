@@ -14,7 +14,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserVO> register(@RequestBody @Valid UserVO userVO) {
+    public ResponseEntity<UserVO> register(@RequestBody  @Valid UserVO userVO) {
         return ResponseEntity.ok(userService.registerNewUserAccount(userVO));
     }
 
