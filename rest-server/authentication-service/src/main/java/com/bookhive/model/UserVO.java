@@ -12,11 +12,6 @@ import java.util.List;
 public class UserVO {
 
     private String id;
-    private String email;
-    private String password;
+    private String username;
     private String role;
-    private String firstName;
-    private String lastName;
-    private String country;
-    private String city;
 }

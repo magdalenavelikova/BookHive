@@ -1,5 +1,6 @@
 package com.bookhive.service;
 
+import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
 import com.bookhive.model.entities.UserEntity;
 import com.bookhive.model.entities.UserRoleEntity;
@@ -21,8 +22,8 @@ public class UserService {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserVO registerNewUserAccount(UserVO userVo) {
-        UserEntity userEntity = userMapper.userVOToUserEntity(userVo);
+    public UserVO registerNewUserAccount(UserRegisterDto userRegisterDto) {
+        UserEntity userEntity = userMapper.userRegisterDtoToUserEntity(userRegisterDto);
         String rowPassword = userEntity.getPassword();
         String password = passwordEncoder.encode(rowPassword);
         userEntity.setPassword(password);
@@ -32,8 +33,10 @@ public class UserService {
         }
 
         userEntity.setEnabled(true);
+        UserEntity saved = userRepository.save(userEntity);
 
-        UserVO userVO = userMapper.userEntityToUserVO(userRepository.save(userEntity));
+        UserVO userVO = userMapper.userEntityToUserVO(saved);
+        userVO.setRole(userEntity.getRole().getRole().toString());
         return userVO;
     }
 
@@ -52,8 +55,14 @@ public class UserService {
             roleUser.setRole(Role.USER);
             roleUser.setCreated(LocalDateTime.now());
             userRoleRepository.save(roleUser);
-
-
+            UserRoleEntity roleAuthor = new UserRoleEntity();
+            roleAuthor.setRole(Role.AUTHOR);
+            roleAuthor.setCreated(LocalDateTime.now());
+            userRoleRepository.save(roleAuthor);
+            UserRoleEntity roleExpert = new UserRoleEntity();
+            roleExpert.setRole(Role.EXPERT);
+            roleExpert.setCreated(LocalDateTime.now());
+            userRoleRepository.save(roleExpert);
         }
 
 

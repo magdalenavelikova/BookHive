@@ -1,5 +1,6 @@
 package com.bookhive.controller;
 
+import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
 import com.bookhive.service.UserService;
 import jakarta.validation.Valid;
@@ -14,8 +15,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserVO> register(@RequestBody  @Valid UserVO userVO) {
-        return ResponseEntity.ok(userService.registerNewUserAccount(userVO));
+    public ResponseEntity<UserVO> register(@RequestBody  @Valid UserRegisterDto userRegisterDto) {
+        return ResponseEntity.ok(userService.registerNewUserAccount(userRegisterDto));
     }
 
 
