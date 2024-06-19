@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,8 +31,12 @@ public class UserEntity extends BaseEntity {
     private boolean enabled;
     @ManyToOne
     private UserRoleEntity role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<UserEntity> friends=new ArrayList<>();
 
-
+    public void addFriend(UserEntity user) {
+        this.friends.add(user);
+    }
     public String getFullName() {
         StringBuilder fullName = new StringBuilder();
         if (getFirstName() != null) {
