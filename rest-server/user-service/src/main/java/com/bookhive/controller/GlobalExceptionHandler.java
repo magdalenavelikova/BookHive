@@ -5,6 +5,8 @@ import com.bookhive.exception.UserNotFoundException;
 import com.bookhive.exception.UserNotUniqueException;
 import com.bookhive.model.dto.UserErrorDto;
 import com.bookhive.model.exception.AppException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,9 +44,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(userErrorDto);
     }
 
-
-
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -60,11 +59,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException exc) {
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("File too large!");
-    }
+//    @ExceptionHandler(MaxUploadSizeExceededException.class)
+//        public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException exc) {
+//        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("File too large!");
+//    }
 
+//    @ExceptionHandler(MaxUploadSizeExceededException.class)
+//    public ResponseEntity<?> handleMaxSizeException(
+//            MaxUploadSizeExceededException exc,
+//            HttpServletRequest request,
+//            HttpServletResponse response) {
+//
+//        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("File too large!");
+//    }
     private Map<String, String> getValidationErrors(BindingResult bindingResult) {
         Map<String, String> fieldErrors = new HashMap<>();
 
