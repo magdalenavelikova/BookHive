@@ -72,7 +72,6 @@ public class UserService {
 
     }
 
-
     private String getPictureUrl(MultipartFile file) throws IOException {
         String pictureUrl = "";
 
@@ -82,4 +81,6 @@ public class UserService {
         return pictureUrl;
 
     }
+
+
 }

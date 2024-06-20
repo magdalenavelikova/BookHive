@@ -5,11 +5,21 @@ import com.bookhive.model.AuthResponse;
 import com.bookhive.model.UserVO;
 import lombok.AllArgsConstructor;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 
 @Service
 @AllArgsConstructor
@@ -64,5 +74,24 @@ public class AuthService {
             return -1; // we do not want to generally read the whole stream into memory ...
         }
 
+    }
+
+    public AuthResponse loginUser(AuthRequest request) {
+        String accessToken;
+        String refreshToken;
+        AuthResponse authResponse = new AuthResponse();
+        try {
+            UserVO loginUser = restTemplate.postForObject(LOGIN_URL, request,
+                    UserVO.class);
+            accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                    loginUser.getRole(), "ACCESS");
+            refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                    loginUser.getRole(), "REFRESH");
+            authResponse.setAccessToken(accessToken);
+            authResponse.setRefreshToken(refreshToken);
+        } catch (HttpClientErrorException e) {
+            authResponse.setAccessToken(e.getMessage());
+        }
+        return authResponse;
     }
 }
