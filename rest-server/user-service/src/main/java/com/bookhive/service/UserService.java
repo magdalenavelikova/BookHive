@@ -82,5 +82,22 @@ public class UserService {
 
     }
 
+    public UserVO getUserCredentials(UserVO userLoginDTO) {
+        Optional<UserEntity> user = this.userRepository.findByUsername(userLoginDTO.getUsername());
+        if (user.isEmpty()) {
+            throw new UserLoginException("Incorrect Username ot Password");
+        }
+        boolean isPasswordsMatch = passwordEncoder.matches(userLoginDTO.getPassword(),
+                user.get().getPassword());
+        if (!isPasswordsMatch) {
+            throw new UserLoginException("Incorrect Username ot Password");
+        }
+        UserVO userVO = new UserVO();
+        userVO.setId(user.get().getId());
+        userVO.setUsername(user.get().getUsername());
+        Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
+        userVO.setRole(String.valueOf(role.get().getRole()));
+        return userVO;
+    }
 
 }
