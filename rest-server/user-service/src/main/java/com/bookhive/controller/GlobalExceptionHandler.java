@@ -2,11 +2,10 @@ package com.bookhive.controller;
 
 
 import com.bookhive.exception.UserNotFoundException;
+import com.bookhive.exception.UserLoginException;
 import com.bookhive.exception.UserNotUniqueException;
 import com.bookhive.model.dto.UserErrorDto;
 import com.bookhive.model.exception.AppException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
@@ -42,6 +40,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(userErrorDto);
+    }
+
+    @ExceptionHandler(UserLoginException.class)
+    public ResponseEntity<?> userLoginException(UserLoginException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
     @Override

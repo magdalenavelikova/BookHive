@@ -26,6 +26,11 @@ public class UserController {
         return ResponseEntity.ok(userService.registerNewUserAccount(file,userRegisterDto));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUserCredentials(@RequestBody UserVO userVO) {
+        return ResponseEntity.ok(userService.getUserCredentials(userVO));
+    }
+
 
     @GetMapping("/secured")
     public ResponseEntity<String> securedEndpoint() {

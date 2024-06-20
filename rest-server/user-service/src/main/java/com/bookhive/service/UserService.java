@@ -1,5 +1,6 @@
 package com.bookhive.service;
 
+import com.bookhive.exception.UserLoginException;
 import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
 import com.bookhive.model.entities.UserEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -70,6 +72,7 @@ public class UserService {
 
     }
 
+
     private String getPictureUrl(MultipartFile file) throws IOException {
         String pictureUrl = "";
 
@@ -77,5 +80,6 @@ public class UserService {
             pictureUrl = cloudinaryService.uploadImage(file);
         }
         return pictureUrl;
+
     }
 }

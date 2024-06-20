@@ -5,14 +5,6 @@ import com.bookhive.model.AuthResponse;
 import com.bookhive.model.UserVO;
 import lombok.AllArgsConstructor;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +16,8 @@ import java.io.InputStream;
 public class AuthService {
     private final JWTService jwtService;
     private RestTemplate restTemplate;
+
+    private static final String LOGIN_URL = "http://user-service/users/login";
 
 
     public AuthResponse register(MultipartFile file,AuthRequest request) throws IOException {
@@ -69,5 +63,6 @@ public class AuthService {
         public long contentLength() throws IOException {
             return -1; // we do not want to generally read the whole stream into memory ...
         }
+
     }
 }
