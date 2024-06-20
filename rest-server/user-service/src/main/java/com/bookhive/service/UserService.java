@@ -1,7 +1,6 @@
 package com.bookhive.service;
 
 import com.bookhive.exception.UserLoginException;
-import com.bookhive.model.dto.UserLoginDTO;
 import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
 import com.bookhive.model.entities.UserEntity;
@@ -71,7 +70,7 @@ public class UserService {
 
     }
 
-    public UserVO getUserCredentials(UserLoginDTO userLoginDTO) {
+    public UserVO getUserCredentials(UserVO userLoginDTO) {
         Optional<UserEntity> user = this.userRepository.findByUsername(userLoginDTO.getUsername());
         if (user.isEmpty()) {
             throw new UserLoginException("Incorrect Username ot Password");
