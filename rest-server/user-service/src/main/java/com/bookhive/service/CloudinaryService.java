@@ -1,6 +1,7 @@
 package com.bookhive.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,21 @@ public class CloudinaryService {
 
     private final Cloudinary cloudinary;
 
+    public String uploadAvatar(MultipartFile multipartFile) throws IOException {
+        String publicId = uploadImage(multipartFile);
 
+        Transformation transformation = new Transformation()
+                .width(100)
+                .height(100)
+                .radius("max")
+                .gravity("face")
+                .crop("fill");
+
+        return cloudinary.url().secure(true)
+                .transformation(transformation)
+                .format("png")
+                .generate(publicId);
+    }
 
     public String uploadImage(MultipartFile multipartFile) throws IOException {
         File file = File.createTempFile(TEMP_FILE, multipartFile.getOriginalFilename());
@@ -26,14 +41,11 @@ public class CloudinaryService {
         return this.cloudinary
                 .uploader()
                 .upload(file, Collections.emptyMap())
-                .get(URL)
+                .get("public_id")
                 .toString();
     }
 
-
-
     public void deleteImage(String url) {
-
         String fileNameWithType = url.substring(url.lastIndexOf("/") + 1);
         String fileNameWithoutType = fileNameWithType.substring(0, fileNameWithType.lastIndexOf("."));
         try {
@@ -42,4 +54,18 @@ public class CloudinaryService {
             throw new RuntimeException(e);
         }
     }
+
+
+//    public String uploadImage(MultipartFile multipartFile) throws IOException {
+//        File file = File.createTempFile(TEMP_FILE, multipartFile.getOriginalFilename());
+//        multipartFile.transferTo(file);
+//
+//        return this.cloudinary
+//                .uploader()
+//                .upload(file, Collections.emptyMap())
+//                .get(URL)
+//                .toString();
+//    }
+
+
 }

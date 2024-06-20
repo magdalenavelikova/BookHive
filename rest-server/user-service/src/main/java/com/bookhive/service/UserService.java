@@ -76,7 +76,7 @@ public class UserService {
         String pictureUrl = "";
 
         if (file != null) {
-            pictureUrl = cloudinaryService.uploadImage(file);
+            pictureUrl = cloudinaryService.uploadAvatar(file);
         }
         return pictureUrl;
     }
