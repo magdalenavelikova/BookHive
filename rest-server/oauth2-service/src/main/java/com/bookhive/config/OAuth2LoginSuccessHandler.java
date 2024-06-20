@@ -1,5 +1,6 @@
 package com.bookhive.config;
 
+import com.bookhive.service.OAuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,12 +12,17 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
+    private final OAuthService oAuthService;
+
     private static final String URL = "http://localhost:3000";
+
+    public OAuth2LoginSuccessHandler(OAuthService oAuthService) {
+        this.oAuthService = oAuthService;
+    }
 
 
     @Override
@@ -30,6 +36,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             Map<String, Object> attributes = principal.getAttributes();
             String email = attributes.getOrDefault("email", "").toString();
             String name = attributes.getOrDefault("name", "").toString();
+            this.oAuthService.sendEmail(email);
 //            Optional<UserEntity> user = this.userService.findByEmail(email);
 //            if (user.isPresent()) {
 //                authUser(user.get(), attributes, user.get(), oAuth2AuthenticationToken);
@@ -38,6 +45,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 //            }
         }
         this.setAlwaysUseDefaultTargetUrl(true);
+        this.setDefaultTargetUrl(URL);
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }
