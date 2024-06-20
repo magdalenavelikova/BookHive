@@ -12,7 +12,9 @@ import com.bookhive.repository.UserRoleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -23,8 +25,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
-    public UserVO registerNewUserAccount(UserRegisterDto userRegisterDto) {
+    public UserVO registerNewUserAccount(MultipartFile file, UserRegisterDto userRegisterDto) throws IOException {
         UserEntity userEntity = userMapper.userRegisterDtoToUserEntity(userRegisterDto);
         String rowPassword = userEntity.getPassword();
         String password = passwordEncoder.encode(rowPassword);
@@ -35,16 +38,15 @@ public class UserService {
             userEntity.setRole(userRoleRepository.findByRole(Role.USER).get());
         }
         userEntity.setEnabled(false);
-        UserEntity saved = userRepository.save(userEntity);
-
-        UserVO userVO = userMapper.userEntityToUserVO(saved);
+        userEntity.setAvatar(getPictureUrl(file));
+        UserVO userVO = userMapper.userEntityToUserVO(userRepository.save(userEntity));
         userVO.setRole(userEntity.getRole().getRole().toString());
         return userVO;
     }
 
     public void initRole() {
 
-        if (userRoleRepository.count() == 0 ) {
+        if (userRoleRepository.count() == 0) {
             UserRoleEntity roleAdmin = new UserRoleEntity();
             roleAdmin.setRole(Role.ADMIN);
             roleAdmin.setCreated(LocalDateTime.now());
@@ -70,21 +72,14 @@ public class UserService {
 
     }
 
-    public UserVO getUserCredentials(UserVO userLoginDTO) {
-        Optional<UserEntity> user = this.userRepository.findByUsername(userLoginDTO.getUsername());
-        if (user.isEmpty()) {
-            throw new UserLoginException("Incorrect Username ot Password");
+
+    private String getPictureUrl(MultipartFile file) throws IOException {
+        String pictureUrl = "";
+
+        if (file != null) {
+            pictureUrl = cloudinaryService.uploadImage(file);
         }
-        boolean isPasswordsMatch = passwordEncoder.matches(userLoginDTO.getPassword(),
-                user.get().getPassword());
-        if (!isPasswordsMatch) {
-            throw new UserLoginException("Incorrect Username ot Password");
-        }
-        UserVO userVO = new UserVO();
-        userVO.setId(user.get().getId());
-        userVO.setUsername(user.get().getUsername());
-        Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
-        userVO.setRole(String.valueOf(role.get().getRole()));
-        return userVO;
+        return pictureUrl;
+
     }
 }

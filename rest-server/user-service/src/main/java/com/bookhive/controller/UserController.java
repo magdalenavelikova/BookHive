@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/users")
@@ -14,9 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserVO> register(@RequestBody  @Valid UserRegisterDto userRegisterDto) {
-        return ResponseEntity.ok(userService.registerNewUserAccount(userRegisterDto));
+    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    public ResponseEntity<UserVO> register(
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart("auth")  @Valid UserRegisterDto userRegisterDto
+
+            ) throws IOException {
+        return ResponseEntity.ok(userService.registerNewUserAccount(file,userRegisterDto));
     }
 
     @PostMapping("/login")

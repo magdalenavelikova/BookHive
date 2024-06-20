@@ -7,5 +7,5 @@ spring:
 
 jwt:
   secret: ${TOKEN_SECRET}
-  expiration: 86400
+
 
