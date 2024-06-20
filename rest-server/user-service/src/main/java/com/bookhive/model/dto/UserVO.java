@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 public class UserVO {
 
-    private String id;
+    private Long id;
     private String username;
     private String role;
 }

@@ -1,7 +1,6 @@
 package com.bookhive.service;
 
 import com.bookhive.exception.UserLoginException;
-import com.bookhive.exception.WrongPasswordExceptionInLogin;
 import com.bookhive.model.dto.UserLoginDTO;
 import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
@@ -72,7 +71,7 @@ public class UserService {
 
     }
 
-    public UserLoginDTO getUserCredentials(UserLoginDTO userLoginDTO) {
+    public UserVO getUserCredentials(UserLoginDTO userLoginDTO) {
         Optional<UserEntity> user = this.userRepository.findByUsername(userLoginDTO.getUsername());
         if (user.isEmpty()) {
             throw new UserLoginException("Incorrect Username ot Password");
@@ -82,10 +81,11 @@ public class UserService {
         if (!isPasswordsMatch) {
             throw new UserLoginException("Incorrect Username ot Password");
         }
-        userLoginDTO.setId(user.get().getId());
-        userLoginDTO.setUsername(user.get().getUsername());
+        UserVO userVO = new UserVO();
+        userVO.setId(user.get().getId());
+        userVO.setUsername(user.get().getUsername());
         Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
-        userLoginDTO.setRole(String.valueOf(role.get().getRole()));
-        return userLoginDTO;
+        userVO.setRole(String.valueOf(role.get().getRole()));
+        return userVO;
     }
 }
