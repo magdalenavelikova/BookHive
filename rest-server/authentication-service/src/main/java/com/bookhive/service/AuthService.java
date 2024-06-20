@@ -53,8 +53,6 @@ public class AuthService {
 
 
 
-
-
     static class MultipartInputStreamFileResource extends InputStreamResource {
 
         private final String filename;
@@ -93,5 +91,9 @@ public class AuthService {
             authResponse.setAccessToken(e.getMessage());
         }
         return authResponse;
+    }
+
+    public AuthResponse loginUserWithOAuth(AuthRequest request) {
+        return null;
     }
 }
