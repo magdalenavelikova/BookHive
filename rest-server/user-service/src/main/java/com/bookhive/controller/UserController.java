@@ -1,5 +1,6 @@
 package com.bookhive.controller;
 
+import com.bookhive.model.dto.AuthRequest;
 import com.bookhive.model.dto.UserRegisterDto;
 import com.bookhive.model.dto.UserVO;
 import com.bookhive.service.UserService;
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUserCredentials(@RequestBody UserVO userVO) {
+    public ResponseEntity<?> loginUserCredentials(@RequestBody AuthRequest userVO) {
         return ResponseEntity.ok(userService.getUserCredentials(userVO));
     }
 
