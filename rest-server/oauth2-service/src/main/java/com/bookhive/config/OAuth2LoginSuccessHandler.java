@@ -37,12 +37,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             String email = attributes.getOrDefault("email", "").toString();
             String name = attributes.getOrDefault("name", "").toString();
             this.oAuthService.sendEmail(email);
-//            Optional<UserEntity> user = this.userService.findByEmail(email);
-//            if (user.isPresent()) {
-//                authUser(user.get(), attributes, user.get(), oAuth2AuthenticationToken);
-//            } else {
-//                saveAndAuthNewUser(oAuth2AuthenticationToken, attributes, email, name);
-//            }
         }
         this.setAlwaysUseDefaultTargetUrl(true);
         this.setDefaultTargetUrl(URL);
