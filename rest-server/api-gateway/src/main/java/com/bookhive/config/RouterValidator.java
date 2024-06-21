@@ -12,7 +12,7 @@ import java.util.function.Predicate;
         public static final List<String> openEndpoints = List.of(
                 "/auth/register",
             "/auth/login",
-            "/auth/oauth2"
+            "/auth/oauth"
         );
 
         public Predicate<ServerHttpRequest> isSecured =
