@@ -15,7 +15,7 @@ public class OAuthService {
 
     private RestTemplate restTemplate;
 
-    private static final String AUTH_SERVICE_URL = "http://localhost:9001/auth/oauth";
+    private static final String AUTH_SERVICE_URL = "http://auth-service/auth/oauth";
 
 
     public void sendEmail(String email) {
