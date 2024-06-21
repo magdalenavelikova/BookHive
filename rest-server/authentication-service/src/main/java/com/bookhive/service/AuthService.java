@@ -94,6 +94,17 @@ public class AuthService {
     }
 
     public AuthResponse loginUserWithOAuth(AuthRequest request) {
-        return null;
+        String accessToken;
+        String refreshToken;
+        AuthResponse authResponse = new AuthResponse();
+        UserVO loginUser = restTemplate.postForObject("http://user-service/users/login-auth", request,
+                UserVO.class);
+        accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                loginUser.getRole(), "ACCESS");
+        refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                loginUser.getRole(), "REFRESH");
+        authResponse.setAccessToken(accessToken);
+        authResponse.setRefreshToken(refreshToken);
+        return authResponse;
     }
 }

@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class OAuthDTO {
 
     private String email;
+    private String accessToken;
+    private String refreshToken;
 }

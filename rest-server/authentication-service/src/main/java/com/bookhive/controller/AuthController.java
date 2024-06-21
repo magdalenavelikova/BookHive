@@ -44,6 +44,6 @@ public class AuthController {
     @PostMapping("/oauth")
     public ResponseEntity<?> oauthLogin(@RequestBody AuthRequest request) {
         AuthResponse authResponse = this.authService.loginUserWithOAuth(request);
-        return null;
+        return ResponseEntity.ok(authResponse);
     }
 }
