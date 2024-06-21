@@ -24,7 +24,7 @@ public class OAuthService {
         OAuthDTO oAuthDTO = new OAuthDTO();
         oAuthDTO.setEmail(email);
         HttpEntity<OAuthDTO> request = new HttpEntity<>(oAuthDTO, headers);
-        OAuthDTO authUser = restTemplate.postForObject(AUTH_SERVICE_URL, request, OAuthDTO.class);
+        OAuthDTO authUser = restTemplate.postForObject("http://localhost:9001/auth/oauth", request, OAuthDTO.class);
 
     }
 }
