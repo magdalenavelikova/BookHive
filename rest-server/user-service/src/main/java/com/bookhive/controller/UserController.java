@@ -32,6 +32,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserCredentials(request));
     }
 
+    @PostMapping("/login-auth")
+    public ResponseEntity<?> loginAuthCredentials(@RequestBody AuthRequest request) {
+        return ResponseEntity.ok(userService.getAuthCredentials(request));
+    }
+
 
     @GetMapping("/secured")
     public ResponseEntity<String> securedEndpoint() {

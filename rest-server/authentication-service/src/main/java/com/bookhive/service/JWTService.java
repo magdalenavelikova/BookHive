@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class JWTService {
 
-    @Value("${jwt.secret}")
+    @Value("${TOKEN_SECRET}")
     private String jwtSigningKey;
     //    @Value("${jwt.expiration}")
 //    private String expiration;

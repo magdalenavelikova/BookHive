@@ -102,4 +102,30 @@ public class UserService {
         return userVO;
     }
 
+    public UserVO getAuthCredentials(AuthRequest request) {
+        Optional<UserEntity> user = this.userRepository.findByEmail(request.getEmail());
+        UserVO userVO = new UserVO();
+        if (user.isPresent()) {
+            userVO.setId(user.get().getId());
+            userVO.setUsername(user.get().getUsername());
+            Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
+            userVO.setRole(String.valueOf(role.get().getRole()));
+        } else {
+            registerNewUserAuth(request);
+            Optional<UserEntity> newUser = this.userRepository.findByEmail(request.getEmail());
+            userVO.setId(newUser.get().getId());
+            userVO.setUsername(newUser.get().getUsername());
+            Optional<UserRoleEntity> role = this.userRoleRepository.findById(newUser.get().getRole().getId());
+            userVO.setRole(String.valueOf(role.get().getRole()));
+        }
+        return userVO;
+    }
+
+    private void registerNewUserAuth(AuthRequest request) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(request.getEmail());
+        userEntity.setEmail(request.getEmail());
+        userEntity.setRole(userRoleRepository.findByRole(Role.USER).get());
+        this.userRepository.save(userEntity);
+    }
 }

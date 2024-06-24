@@ -55,25 +55,6 @@ public class AuthService {
     }
 
 
-    public AuthResponse loginUser(AuthRequest request) {
-        String accessToken;
-        String refreshToken;
-        AuthResponse authResponse = new AuthResponse();
-        try {
-            UserVO loginUser = restTemplate.postForObject(LOGIN_URL, request,
-                    UserVO.class);
-            accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
-                    loginUser.getRole(), "ACCESS");
-            refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
-                    loginUser.getRole(), "REFRESH");
-            authResponse.setAccessToken(accessToken);
-            authResponse.setRefreshToken(refreshToken);
-        } catch (HttpClientErrorException e) {
-            authResponse.setAccessToken(e.getMessage());
-        }
-        return authResponse;
-    }
-
 
     static class MultipartInputStreamFileResource extends InputStreamResource {
 
@@ -96,5 +77,38 @@ public class AuthService {
 
     }
 
+    public AuthResponse loginUser(AuthRequest request) {
+        String accessToken;
+        String refreshToken;
+        AuthResponse authResponse = new AuthResponse();
+        try {
+            UserVO loginUser = restTemplate.postForObject(LOGIN_URL, request,
+                    UserVO.class);
+            accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                    loginUser.getRole(), "ACCESS");
+            refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                    loginUser.getRole(), "REFRESH");
+            authResponse.setAccessToken(accessToken);
+            authResponse.setRefreshToken(refreshToken);
+        } catch (HttpClientErrorException e) {
+            authResponse.setAccessToken(e.getMessage());
+        }
+        return authResponse;
+    }
+
+    public AuthResponse loginUserWithOAuth(AuthRequest request) {
+        String accessToken;
+        String refreshToken;
+        AuthResponse authResponse = new AuthResponse();
+        UserVO loginUser = restTemplate.postForObject("http://user-service/users/login-auth", request,
+                UserVO.class);
+        accessToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                loginUser.getRole(), "ACCESS");
+        refreshToken = jwtService.generate(loginUser.getId(), loginUser.getUsername(),
+                loginUser.getRole(), "REFRESH");
+        authResponse.setAccessToken(accessToken);
+        authResponse.setRefreshToken(refreshToken);
+        return authResponse;
+    }
 
 }

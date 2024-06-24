@@ -6,7 +6,6 @@ import com.bookhive.model.AuthResponse;
 import com.bookhive.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,5 +39,11 @@ public class AuthController {
             customError.setError(authResponse.getAccessToken());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customError);
         }
+    }
+
+    @PostMapping("/oauth")
+    public ResponseEntity<?> oauthLogin(@RequestBody AuthRequest request) {
+        AuthResponse authResponse = this.authService.loginUserWithOAuth(request);
+        return ResponseEntity.ok(authResponse);
     }
 }

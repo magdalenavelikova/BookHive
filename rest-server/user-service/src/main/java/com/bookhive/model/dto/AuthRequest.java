@@ -13,6 +13,6 @@ public class AuthRequest {
     private String username;
     @NotEmpty(message = "Password should be provided.")
     private String password;
-
+    private String email;
 
 }
