@@ -4,14 +4,12 @@ import com.bookhive.model.AuthRequest;
 import com.bookhive.model.AuthResponse;
 import com.bookhive.model.UserVO;
 import lombok.AllArgsConstructor;
-
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
-
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -30,7 +28,8 @@ public class AuthService {
     private static final String LOGIN_URL = "http://user-service/users/login";
 
 
-    public AuthResponse register(MultipartFile file,AuthRequest request) throws IOException {
+    public AuthResponse register(MultipartFile file, AuthRequest request) throws IOException {
+        AuthResponse authResponse = new AuthResponse();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -39,17 +38,21 @@ public class AuthService {
         if (!file.isEmpty()) {
             body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
         }
-        body.add(  "auth", request);
+        body.add("auth", request);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity
                 = new HttpEntity<>(body, headers);
-
-        UserVO registeredUser = restTemplate.postForObject("http://user-service/users/register", requestEntity, UserVO.class);
-        String accessToken = jwtService.generate(registeredUser.getId(),registeredUser.getUsername(), registeredUser.getRole(), "ACCESS");
-        String refreshToken = jwtService.generate(registeredUser.getId(), registeredUser.getUsername(),registeredUser.getRole(), "REFRESH");
-        return new AuthResponse(accessToken, refreshToken);
+        try {
+            UserVO registeredUser = restTemplate.postForObject("http://user-service/users/register", requestEntity, UserVO.class);
+            String accessToken = jwtService.generate(registeredUser.getId(), registeredUser.getUsername(), registeredUser.getRole(), "ACCESS");
+            String refreshToken = jwtService.generate(registeredUser.getId(), registeredUser.getUsername(), registeredUser.getRole(), "REFRESH");
+            authResponse.setAccessToken(accessToken);
+            authResponse.setRefreshToken(refreshToken);
+        } catch (HttpClientErrorException e) {
+            authResponse.setAccessToken(e.getMessage());
+        }
+        return authResponse;
     }
-
 
 
 
@@ -107,4 +110,5 @@ public class AuthService {
         authResponse.setRefreshToken(refreshToken);
         return authResponse;
     }
+
 }

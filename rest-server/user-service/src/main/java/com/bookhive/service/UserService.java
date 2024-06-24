@@ -70,28 +70,29 @@ public class UserService {
             userRoleRepository.save(roleExpert);
         }
 
-
     }
 
     private String getPictureUrl(MultipartFile file) throws IOException {
         String pictureUrl = "";
 
         if (file != null) {
-            pictureUrl = cloudinaryService.uploadImage(file);
+            pictureUrl = cloudinaryService.uploadAvatar(file);
         }
         return pictureUrl;
-
     }
 
-    public UserVO getUserCredentials(AuthRequest userLoginDTO) {
-        Optional<UserEntity> user = this.userRepository.findByUsername(userLoginDTO.getUsername());
+    public UserVO getUserCredentials(AuthRequest authRequest) {
+        Optional<UserEntity> user = this.userRepository.findByUsername(authRequest.getUsername());
         if (user.isEmpty()) {
-            throw new UserLoginException("Incorrect Username ot Password");
+            throw new UserLoginException("Incorrect Username or Password");
         }
-        boolean isPasswordsMatch = passwordEncoder.matches(userLoginDTO.getPassword(),
+        boolean isPasswordsMatch = passwordEncoder.matches(authRequest.getPassword(),
                 user.get().getPassword());
         if (!isPasswordsMatch) {
-            throw new UserLoginException("Incorrect Username ot Password");
+            throw new UserLoginException("Incorrect Username or Password");
+        }
+        if (!user.get().isEnabled()) {
+            throw new UserLoginException("User is not activated");
         }
         UserVO userVO = new UserVO();
         userVO.setId(user.get().getId());
