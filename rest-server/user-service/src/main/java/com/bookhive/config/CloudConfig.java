@@ -17,10 +17,11 @@ public class CloudConfig {
     private String apiKey;
     @Value("${cloudinary.api-secret}")
     private String apiSecret;
-
+    //CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret>@dp9xpkv6b
     @Bean
     Cloudinary createCloudinaryConfig() {
         Map<String, Object> config = new HashMap<>();
+
         config.put("cloud_name", cloudName);
         config.put("api_key", apiKey);
         config.put("api_secret", apiSecret);

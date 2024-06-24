@@ -28,8 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUserCredentials(@RequestBody AuthRequest userVO) {
-        return ResponseEntity.ok(userService.getUserCredentials(userVO));
+    public ResponseEntity<?> loginUserCredentials(@RequestBody @Valid AuthRequest request) {
+        return ResponseEntity.ok(userService.getUserCredentials(request));
     }
 
     @PostMapping("/login-auth")

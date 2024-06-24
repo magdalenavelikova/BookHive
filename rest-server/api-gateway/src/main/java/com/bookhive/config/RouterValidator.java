@@ -13,6 +13,7 @@ import java.util.function.Predicate;
                 "/auth/register",
             "/auth/login",
             "/auth/oauth"
+
         );
 
         public Predicate<ServerHttpRequest> isSecured =
