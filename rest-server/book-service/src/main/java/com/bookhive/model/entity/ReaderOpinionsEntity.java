@@ -6,23 +6,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "authors")
-@NoArgsConstructor
+@Table(name = "readers_opinions")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class AuthorEntity {
+public class ReaderOpinionsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(columnDefinition = "TEXT")
+    private String opinion;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<BookEntity> authorBooks;
+    @Column(nullable = false)
+    private LocalDateTime created_on;
+
+    @ManyToOne
+    private BookEntity book;
 }

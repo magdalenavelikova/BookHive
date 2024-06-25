@@ -1,6 +1,5 @@
 package com.bookhive.model.entity;
 
-import com.bookhive.model.entity.AuthorEntity;
 import com.bookhive.model.enums.Genre;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
