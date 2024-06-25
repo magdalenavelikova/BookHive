@@ -5,17 +5,14 @@ import com.bookhive.service.OAuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
-
 import java.io.IOException;
 import java.util.Map;
+
 
 @Component
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -41,13 +38,31 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
             authResponse = this.oAuthService.loginUserWithOAuth(attributes);
         }
+
+        String targetUrlWithToken = URL + "?token=" + authResponse.getAccessToken();
+
         this.setAlwaysUseDefaultTargetUrl(true);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authResponse.getAccessToken());
-        HttpEntity<MultiValueMap<String, Object>> requestEntity
-                = new HttpEntity<>( headers);
-        this.setDefaultTargetUrl(URL);
+        this.setDefaultTargetUrl(targetUrlWithToken);
         super.onAuthenticationSuccess(request, response, authentication);
 
+        //TODO
+//        on client side
+
+//const urlParams = new URLSearchParams(window.location.search);
+//const token = urlParams.get('token');
+//
+//        if (token) {
+//            // Use the token for subsequent requests
+//            fetch('/some-secured-endpoint', {
+//                    method: 'GET',
+//                    headers: {
+//                'Authorization': 'Bearer ' + token
+//            }
+//    }).then(response => {
+//                    // handle the response
+//            }).catch(error => {
+//                    // handle the error
+//            });
+//        }
     }
 }
