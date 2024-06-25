@@ -36,6 +36,7 @@ public class BookEntity {
     @Column(nullable = false)
     private Genre genre;
 
+    @Column()
     private Double rating;
 
 
