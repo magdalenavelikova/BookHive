@@ -1,4 +1,4 @@
-package com.bookhive.service;
+package com.bookhive.config;
 
 import com.bookhive.dto.AuthResponse;
 import com.bookhive.service.OAuthService;
