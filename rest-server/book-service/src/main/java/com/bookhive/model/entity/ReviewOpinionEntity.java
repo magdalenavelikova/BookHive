@@ -9,12 +9,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "readers_opinions")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "review_opinion")
+@AllArgsConstructor@NoArgsConstructor
 @Getter
 @Setter
-public class ReaderOpinionsEntity {
+public class ReviewOpinionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +23,10 @@ public class ReaderOpinionsEntity {
     private String opinion;
 
     @Column(nullable = false)
-    private LocalDateTime created_on;
+    private LocalDateTime created_by;
 
     @ManyToOne
-    private BookEntity book;
+    private ExpertReviewsEntity expertReviewsEntity;
+
+
 }

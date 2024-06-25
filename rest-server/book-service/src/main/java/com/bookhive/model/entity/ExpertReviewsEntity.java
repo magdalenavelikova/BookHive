@@ -9,23 +9,29 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "readers_opinions")
+@Table(name = "expert_reviews")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ReaderOpinionsEntity {
+public class ExpertReviewsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String opinion;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String review;
 
     @Column(nullable = false)
-    private LocalDateTime created_on;
+    private LocalDateTime created_by;
 
     @ManyToOne
-    private BookEntity book;
+    private AuthorEntity author;
+
+    @ManyToOne
+    private BookEntity reviewBook;
 }
