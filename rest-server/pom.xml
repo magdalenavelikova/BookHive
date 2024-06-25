@@ -22,6 +22,7 @@
         <module>authentication-service</module>
         <module>user-service</module>
         <module>oauth2-service</module>
+        <module>book-service</module>
     </modules>
 
     <properties>

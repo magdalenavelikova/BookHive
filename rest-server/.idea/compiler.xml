@@ -10,6 +10,7 @@
         <module name="authentication-service" />
         <module name="discovery-server" />
         <module name="config-service" />
+        <module name="book-service" />
         <module name="review-service" />
         <module name="api-gateway" />
         <module name="user-service" />
@@ -24,6 +25,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="authentication-service" options="-parameters" />
+      <module name="book-service" options="-parameters" />
       <module name="config-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="oauth2-service" options="-parameters" />
