@@ -23,6 +23,8 @@ public class BookEntity {
     @Column(nullable = false)
     private String title;
 
+    private String cover;
+
     @ManyToOne
     private AuthorEntity author;
 
