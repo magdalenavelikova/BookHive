@@ -29,7 +29,7 @@ public class UserEntity extends BaseEntity {
     private String avatar;
     @Column(columnDefinition = "boolean default false")
     private boolean enabled;
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     private UserRoleEntity role;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<UserEntity> friends=new ArrayList<>();

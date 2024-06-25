@@ -1,9 +1,9 @@
 package com.bookhive.service;
 
 import com.bookhive.exception.UserLoginException;
-import com.bookhive.model.dto.AuthRequest;
-import com.bookhive.model.dto.UserRegisterDto;
-import com.bookhive.model.dto.UserVO;
+import com.bookhive.exception.UserNotFoundException;
+import com.bookhive.exception.UserNotUniqueException;
+import com.bookhive.model.dto.*;
 import com.bookhive.model.entities.UserEntity;
 import com.bookhive.model.entities.UserRoleEntity;
 import com.bookhive.model.enums.Role;
@@ -17,7 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -45,9 +48,8 @@ public class UserService {
             String password = passwordEncoder.encode(rowPassword);
             userEntity.setPassword(password);
         }
-        UserVO userVO = userMapper.userEntityToUserVO(userRepository.save(userEntity));
-        userVO.setRole(userEntity.getRole().getRole().toString());
-        return userVO;
+        return userMapper.userEntityToUserVO(userRepository.save(userEntity));
+
     }
 
 
@@ -64,12 +66,8 @@ public class UserService {
         if (!user.get().isEnabled()) {
             throw new UserLoginException("User is not activated");
         }
-        UserVO userVO = new UserVO();
-        userVO.setId(user.get().getId());
-        userVO.setUsername(user.get().getUsername());
-        Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
-        userVO.setRole(String.valueOf(role.get().getRole()));
-        return userVO;
+        return userMapper.userEntityToUserVO(user.get());
+
     }
 
     public UserVO getAuthCredentials(UserRegisterDto request) throws IOException {
@@ -83,6 +81,89 @@ public class UserService {
             userVO = registerNewUserAccount(null, request, isOauth);
         }
         return userVO;
+    }
+
+        public List<UserDto> getAllUsers() {
+        return userRepository
+                .findAll()
+                .stream()
+                .map(userMapper::userEntityToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserDto editUserCredential(UserEditDto userEditDto, Long id) {
+        UserEntity edit = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        Optional<UserEntity> userEmail = userRepository.findByEmail(userEditDto.getEmail());
+        Optional<UserEntity> username = userRepository.findByUsername(userEditDto.getUsername());
+
+        if (username.isPresent() && !Objects.equals(edit.getId(), username.get().getId())) {
+            throw new UserNotUniqueException(userEditDto.getUsername());
+        }
+
+        if (userEmail.isPresent() && !Objects.equals(edit.getId(), userEmail.get().getId())) {
+            throw new UserNotUniqueException(userEditDto.getEmail());
+        } else {
+            UserEntity temp = userMapper.userEditDtoToUserEntity(userEditDto);
+
+            if (!temp.equals(edit)) {
+                edit.setUsername(temp.getUsername());
+                edit.setEmail(temp.getEmail());
+                edit.setFirstName(temp.getFirstName());
+                edit.setLastName(temp.getLastName());
+                edit.setModified(LocalDateTime.now());
+                edit.setRole(temp.getRole());
+                edit.setModified(LocalDateTime.now());
+                return userMapper.userEntityToUserDto(userRepository.save(edit));
+            }
+            return userMapper.userEntityToUserDto(edit);
+        }
+    }
+//
+//    @Override
+//    public UserDto getUserByVerificationToken(VerificationToken verificationToken) {
+//        return userMapper.userEntityToUserDto(verificationToken.getUser());
+//    }
+//
+//    @Override
+//    public UserDto getUserByUserEmail(AuthRequest request) {
+//        return userMapper.userEntityToUserDto(userRepository.findByEmail(request.getUsername())
+//                .orElseThrow(() -> new UserNotFoundException(request.getUsername())));
+//    }
+//
+
+    public UserEntity getUserByUserEmail(String username) {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+    }
+
+    public UserEditDto getUser(Long id) {
+        return userMapper
+                .userEntityToUserEditDto(userRepository.findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(id)));
+    }
+
+    public void deleteUser(Long id) {
+        if (userRepository.findById(id).isPresent()) {
+            //  tokenRepository.deleteByUserId(id);
+            userRepository.deleteById(id);
+        } else {
+            throw new UserNotFoundException(id);
+        }
+    }
+
+    public boolean changePassword(UserChangePasswordDto userChangePasswordDto, String username) {
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
+
+        boolean isAuthenticated = passwordEncoder.matches(userChangePasswordDto.getOldPassword(), userEntity.getPassword());
+        if (isAuthenticated) {
+            userEntity.setPassword(passwordEncoder.encode(userChangePasswordDto.getNewPassword()));
+            userEntity.setModified(LocalDateTime.now());
+            userRepository.save(userEntity);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void initRole() {
@@ -120,5 +201,6 @@ public class UserService {
         }
         return pictureUrl;
     }
+
 
 }
