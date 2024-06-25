@@ -9,14 +9,14 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class AuthApplication {
-    public static void main(String[] args) {
+public class OauthServiceApplication {
 
-        SpringApplication.run(AuthApplication.class);
+    public static void main(String[] args) {
+        SpringApplication.run(OauthServiceApplication.class);
     }
     @Bean
     @LoadBalanced
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplateOauth() {
         return new RestTemplate();
     }
 }

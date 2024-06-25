@@ -28,20 +28,60 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
 
-    public UserVO registerNewUserAccount(MultipartFile file, UserRegisterDto userRegisterDto) throws IOException {
+    public UserVO registerNewUserAccount(MultipartFile file, UserRegisterDto userRegisterDto, Boolean isOauth) throws IOException {
         UserEntity userEntity = userMapper.userRegisterDtoToUserEntity(userRegisterDto);
-        String rowPassword = userEntity.getPassword();
-        String password = passwordEncoder.encode(rowPassword);
-        userEntity.setPassword(password);
         userEntity.setCreated(LocalDateTime.now());
-
         if (userRoleRepository.findByRole(Role.USER).isPresent()) {
             userEntity.setRole(userRoleRepository.findByRole(Role.USER).get());
         }
-        userEntity.setEnabled(false);
-        userEntity.setAvatar(getPictureUrl(file));
+
+        if (isOauth) {
+            userEntity.setAvatar(userRegisterDto.getAvatar());
+            userEntity.setEnabled(true);
+        } else {
+            userEntity.setAvatar(getPictureUrl(file));
+            userEntity.setEnabled(false);
+            String rowPassword = userEntity.getPassword();
+            String password = passwordEncoder.encode(rowPassword);
+            userEntity.setPassword(password);
+        }
         UserVO userVO = userMapper.userEntityToUserVO(userRepository.save(userEntity));
         userVO.setRole(userEntity.getRole().getRole().toString());
+        return userVO;
+    }
+
+
+    public UserVO getUserCredentials(AuthRequest authRequest) {
+        Optional<UserEntity> user = this.userRepository.findByUsername(authRequest.getUsername());
+        if (user.isEmpty()) {
+            throw new UserLoginException("Incorrect Username or Password");
+        }
+        boolean isPasswordsMatch = passwordEncoder.matches(authRequest.getPassword(),
+                user.get().getPassword());
+        if (!isPasswordsMatch) {
+            throw new UserLoginException("Incorrect Username or Password");
+        }
+        if (!user.get().isEnabled()) {
+            throw new UserLoginException("User is not activated");
+        }
+        UserVO userVO = new UserVO();
+        userVO.setId(user.get().getId());
+        userVO.setUsername(user.get().getUsername());
+        Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
+        userVO.setRole(String.valueOf(role.get().getRole()));
+        return userVO;
+    }
+
+    public UserVO getAuthCredentials(UserRegisterDto request) throws IOException {
+        Optional<UserEntity> user = this.userRepository.findByEmail(request.getEmail());
+        boolean isOauth = true;
+        UserVO userVO = new UserVO();
+        if (user.isPresent()) {
+            userVO = userMapper.userEntityToUserVO(user.get());
+            userVO.setRole(user.get().getRole().getRole().toString());
+        } else {
+            userVO = registerNewUserAccount(null, request, isOauth);
+        }
         return userVO;
     }
 
@@ -81,51 +121,4 @@ public class UserService {
         return pictureUrl;
     }
 
-    public UserVO getUserCredentials(AuthRequest authRequest) {
-        Optional<UserEntity> user = this.userRepository.findByUsername(authRequest.getUsername());
-        if (user.isEmpty()) {
-            throw new UserLoginException("Incorrect Username or Password");
-        }
-        boolean isPasswordsMatch = passwordEncoder.matches(authRequest.getPassword(),
-                user.get().getPassword());
-        if (!isPasswordsMatch) {
-            throw new UserLoginException("Incorrect Username or Password");
-        }
-        if (!user.get().isEnabled()) {
-            throw new UserLoginException("User is not activated");
-        }
-        UserVO userVO = new UserVO();
-        userVO.setId(user.get().getId());
-        userVO.setUsername(user.get().getUsername());
-        Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
-        userVO.setRole(String.valueOf(role.get().getRole()));
-        return userVO;
-    }
-
-    public UserVO getAuthCredentials(AuthRequest request) {
-        Optional<UserEntity> user = this.userRepository.findByEmail(request.getEmail());
-        UserVO userVO = new UserVO();
-        if (user.isPresent()) {
-            userVO.setId(user.get().getId());
-            userVO.setUsername(user.get().getUsername());
-            Optional<UserRoleEntity> role = this.userRoleRepository.findById(user.get().getRole().getId());
-            userVO.setRole(String.valueOf(role.get().getRole()));
-        } else {
-            registerNewUserAuth(request);
-            Optional<UserEntity> newUser = this.userRepository.findByEmail(request.getEmail());
-            userVO.setId(newUser.get().getId());
-            userVO.setUsername(newUser.get().getUsername());
-            Optional<UserRoleEntity> role = this.userRoleRepository.findById(newUser.get().getRole().getId());
-            userVO.setRole(String.valueOf(role.get().getRole()));
-        }
-        return userVO;
-    }
-
-    private void registerNewUserAuth(AuthRequest request) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(request.getEmail());
-        userEntity.setEmail(request.getEmail());
-        userEntity.setRole(userRoleRepository.findByRole(Role.USER).get());
-        this.userRepository.save(userEntity);
-    }
 }

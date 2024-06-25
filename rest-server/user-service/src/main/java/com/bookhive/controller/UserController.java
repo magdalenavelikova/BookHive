@@ -24,7 +24,7 @@ public class UserController {
             @RequestPart("auth")  @Valid UserRegisterDto userRegisterDto
 
             ) throws IOException {
-        return ResponseEntity.ok(userService.registerNewUserAccount(file,userRegisterDto));
+        return ResponseEntity.ok(userService.registerNewUserAccount(file,userRegisterDto,false));
     }
 
     @PostMapping("/login")
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/login-auth")
-    public ResponseEntity<?> loginAuthCredentials(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> loginAuthCredentials(@RequestBody UserRegisterDto request) throws IOException {
         return ResponseEntity.ok(userService.getAuthCredentials(request));
     }
 

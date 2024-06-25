@@ -1,6 +1,7 @@
 package com.bookhive.config;
 
 
+import com.bookhive.service.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -21,7 +22,7 @@ public class SecurityConfig {
 
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    private static final String URL_TARGET = "http://localhost:3000";
+    private static final String URL_TARGET = "http://localhost:8080/users/secured";
 
     public SecurityConfig(OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;

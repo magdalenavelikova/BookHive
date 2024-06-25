@@ -22,11 +22,11 @@ public class CloudinaryService {
         String publicId = uploadImage(multipartFile);
 
         Transformation transformation = new Transformation()
-                .width(100)
-                .height(100)
-                .radius("max")
-                .gravity("face")
-                .crop("fill");
+                .width(150)
+                .crop("fill").chain()
+                .radius("max").chain()
+                .fetchFormat("auto")
+                .gravity("face");
 
         return cloudinary.url().secure(true)
                 .transformation(transformation)
