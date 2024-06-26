@@ -29,7 +29,7 @@ public class UserEntity extends BaseEntity {
     private String avatar;
     @Column(columnDefinition = "boolean default false")
     private boolean enabled;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role")
     private UserRoleEntity role;
     @ManyToMany(fetch = FetchType.EAGER)

@@ -22,8 +22,9 @@ public class OAuthService {
         String email = attributes.getOrDefault("email", "").toString();
         oAuthDTO.setUsername(email.substring(0, email.indexOf("@")));
         oAuthDTO.setEmail(email);
-        oAuthDTO.setFirstName(attributes.getOrDefault("given_name", "").toString());
-        oAuthDTO.setLastName(attributes.getOrDefault("family_name", "").toString());
+        String[] splitedName = attributes.getOrDefault("name", "").toString().split("\\s+");
+        oAuthDTO.setFirstName(splitedName[0]);
+        oAuthDTO.setLastName(splitedName[1]);
         oAuthDTO.setAvatar(attributes.getOrDefault("picture", "").toString());
         HttpEntity<OAuthDTO> request = new HttpEntity<>(oAuthDTO);
         AuthResponse authResponse = restTemplateOauth.postForObject("http://auth-service//auth/oauth", request, AuthResponse.class);
