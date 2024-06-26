@@ -17,7 +17,7 @@ public class JWTService {
     @Value("${TOKEN_SECRET}")
     private String jwtSigningKey;
 
-    public static final long JWT_TOKEN_VALIDITY = 30 * 24 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 30L * 24 * 60 * 60 * 1000;
     private Key key;
 
     @PostConstruct
