@@ -16,7 +16,7 @@ import lombok.Setter;
 public class UserRoleEntity extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "name")
+    @Column()
     private Role role;
 
 }

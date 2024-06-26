@@ -48,6 +48,7 @@ public class UserService {
             String password = passwordEncoder.encode(rowPassword);
             userEntity.setPassword(password);
         }
+
         return userMapper.userEntityToUserVO(userRepository.save(userEntity));
 
     }
@@ -73,17 +74,16 @@ public class UserService {
     public UserVO getAuthCredentials(UserRegisterDto request) throws IOException {
         Optional<UserEntity> user = this.userRepository.findByEmail(request.getEmail());
         boolean isOauth = true;
-        UserVO userVO = new UserVO();
+        UserVO userVO;
         if (user.isPresent()) {
             userVO = userMapper.userEntityToUserVO(user.get());
-            userVO.setRole(user.get().getRole().getRole().toString());
         } else {
             userVO = registerNewUserAccount(null, request, isOauth);
         }
         return userVO;
     }
 
-        public List<UserDto> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userRepository
                 .findAll()
                 .stream()
@@ -112,7 +112,7 @@ public class UserService {
                 edit.setFirstName(temp.getFirstName());
                 edit.setLastName(temp.getLastName());
                 edit.setModified(LocalDateTime.now());
-                edit.setRole(temp.getRole());
+                edit.setRole(userRoleRepository.findByRole(Role.valueOf(temp.getRole().getRole().toString())).get());
                 edit.setModified(LocalDateTime.now());
                 return userMapper.userEntityToUserDto(userRepository.save(edit));
             }

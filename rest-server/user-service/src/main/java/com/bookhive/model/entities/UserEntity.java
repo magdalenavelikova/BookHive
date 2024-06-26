@@ -29,14 +29,16 @@ public class UserEntity extends BaseEntity {
     private String avatar;
     @Column(columnDefinition = "boolean default false")
     private boolean enabled;
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "role")
     private UserRoleEntity role;
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<UserEntity> friends=new ArrayList<>();
+    private List<UserEntity> friends = new ArrayList<>();
 
     public void addFriend(UserEntity user) {
         this.friends.add(user);
     }
+
     public String getFullName() {
         StringBuilder fullName = new StringBuilder();
         if (getFirstName() != null) {

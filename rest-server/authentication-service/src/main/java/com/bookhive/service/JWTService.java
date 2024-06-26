@@ -16,8 +16,7 @@ public class JWTService {
 
     @Value("${TOKEN_SECRET}")
     private String jwtSigningKey;
-    //    @Value("${jwt.expiration}")
-//    private String expiration;
+
     public static final long JWT_TOKEN_VALIDITY = 30 * 24 * 60 * 60;
     private Key key;
 
