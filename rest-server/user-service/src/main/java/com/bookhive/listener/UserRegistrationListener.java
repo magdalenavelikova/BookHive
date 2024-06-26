@@ -32,7 +32,7 @@ public class UserRegistrationListener implements
             throw new RuntimeException(e);
         }
     }
-
+    //TODO send message to mail-service
     private void confirmRegistration(OnUserRegistrationCompleteEvent event) throws  UnsupportedEncodingException {
         UserVO user = event.getUser();
 

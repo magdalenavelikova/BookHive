@@ -142,29 +142,29 @@ public class UserController {
     }
 
 
-//
-//    @PostMapping("/forgotten-password")
-//    public ResponseEntity<?> forgottenPassword(@RequestBody AuthRequest authRequest,  @RequestHeader HttpHeaders headers) {
-//        if (isValid(authRequest) != null) {
-//            userService.forgottenPassword(authRequest, request);
-//            String messageValue = "Email was send";
-//            return ResponseEntity.status(HttpStatus.ACCEPTED).body("{\"message\": \"" + messageValue + "\" }");
-//        }
-//        String messageValue = "Invalid email address";
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"" + messageValue + "\" }");
-//
-//    }
-//    @PatchMapping("/forgotten-password/new-password")
-//    public ResponseEntity<?> forgottenPasswordNewPassword(@RequestBody @Valid UserForgottenPasswordDto forgottenPasswordNewPasswordDto) {
-//        VerificationToken verificationToken = userService.getVerificationToken(forgottenPasswordNewPasswordDto.getVerificationToken());
-//        ResponseEntity<String> UNAUTHORIZED =
-//                getStringResponseEntity(verificationToken);
-//        if (UNAUTHORIZED != null) return UNAUTHORIZED;
-//        userService.setNewPassword(forgottenPasswordNewPasswordDto);
-//        String messageValue = "Successfully changed password";
-//        return ResponseEntity.status(HttpStatus.ACCEPTED).body("{ \"message\": \"" + messageValue + "\" }");
-//    }
-//
+
+    @PostMapping("/forgotten-password")
+    public ResponseEntity<?> forgottenPassword(@RequestBody AuthRequest authRequest) {
+        if (authRequest != null) {
+            userService.forgottenPassword(authRequest);
+            String messageValue = "Email was send";
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("{\"message\": \"" + messageValue + "\" }");
+        }
+        String messageValue = "Invalid email address";
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"" + messageValue + "\" }");
+
+    }
+    @PatchMapping("/forgotten-password/new-password")
+    public ResponseEntity<?> forgottenPasswordNewPassword(@RequestBody @Valid UserForgottenPasswordDto forgottenPasswordNewPasswordDto) {
+        VerificationToken verificationToken = userService.getVerificationToken(forgottenPasswordNewPasswordDto.getVerificationToken());
+        ResponseEntity<String> UNAUTHORIZED =
+                getStringResponseEntity(verificationToken);
+        if (UNAUTHORIZED != null) return UNAUTHORIZED;
+        userService.setNewPassword(forgottenPasswordNewPasswordDto);
+        String messageValue = "Successfully changed password";
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("{ \"message\": \"" + messageValue + "\" }");
+    }
+
 
     @GetMapping("/secured")
     public ResponseEntity<String> securedEndpoint() {

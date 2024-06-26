@@ -2,6 +2,9 @@ package com.bookhive.listener;
 
 
 import com.bookhive.event.OnForgottenPasswordCompleteEvent;
+import com.bookhive.model.dto.UserDto;
+import com.bookhive.model.entities.UserEntity;
+import com.bookhive.model.entities.VerificationToken;
 import com.bookhive.service.UserService;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,18 +31,18 @@ public class UserForgottenPasswordListener implements
             throw new RuntimeException(e);
         }
     }
-
+//TODO send message to mail-service
     private void changeForgottenPassword(OnForgottenPasswordCompleteEvent event) throws  UnsupportedEncodingException {
-//        UserDto user = userService.getUserByUserEmail(event.getRequest());
-//        UserEntity userEntity = userService.getUserByUserEmail(user.getEmail());
-//        VerificationToken verificationToken = userService.getVerificationTokenByUser(userEntity);
-//        String token;
-//        if (verificationToken == null) {
-//            token = UUID.randomUUID().toString();
-//            userService.createVerificationToken(user, token);
-//        } else {
-//            token = verificationToken.getToken();
-//        }
+        UserDto user = userService.getUserByUserEmail(event.getRequest());
+        UserEntity userEntity = userService.getUserByUserEmail(user.getEmail());
+        VerificationToken verificationToken = userService.getVerificationTokenByUser(userEntity);
+        String token;
+        if (verificationToken == null) {
+            token = UUID.randomUUID().toString();
+            userService.createVerificationToken(user, token);
+        } else {
+            token = verificationToken.getToken();
+        }
 //        String confirmationUrl
 //                = event.getAppUrl() + "/new-password?token=" + token;
 //        userForgottenPasswordMailService.sendForgottenPasswordEmail(user.getFullName(),

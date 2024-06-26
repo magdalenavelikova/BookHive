@@ -8,18 +8,20 @@ import java.util.function.Predicate;
 
 
 @Service
-    public class RouterValidator {
-        public static final List<String> openEndpoints = List.of(
-                "/auth/register",
+public class RouterValidator {
+    public static final List<String> openEndpoints = List.of(
+            "/auth/register",
             "/auth/login",
-                "/auth/oauth",
-               " /auth/registerConfirm"
+            "/auth/oauth",
+            "/auth/registerConfirm",
+            "/users/forgotten-password",
+            "/users/forgotten-password/new-password"
 
 
-        );
+    );
 
-        public Predicate<ServerHttpRequest> isSecured =
-                request -> openEndpoints.stream()
-                        .noneMatch(uri -> request.getURI().getPath().contains(uri));
-    }
+    public Predicate<ServerHttpRequest> isSecured =
+            request -> openEndpoints.stream()
+                    .noneMatch(uri -> request.getURI().getPath().contains(uri));
+}
 

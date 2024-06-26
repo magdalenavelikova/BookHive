@@ -1,5 +1,6 @@
 package com.bookhive.service;
 
+import com.bookhive.event.OnForgottenPasswordCompleteEvent;
 import com.bookhive.event.OnUserRegistrationCompleteEvent;
 import com.bookhive.exception.UserLoginException;
 import com.bookhive.exception.UserNotFoundException;
@@ -14,7 +15,6 @@ import com.bookhive.repository.UserRepository;
 import com.bookhive.repository.UserRoleRepository;
 import com.bookhive.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,7 +55,7 @@ public class UserService {
             String rowPassword = userEntity.getPassword();
             String password = passwordEncoder.encode(rowPassword);
             userEntity.setPassword(password);
-            String appUrl =  "/users/register";
+            String appUrl = "/users/register";
             UserVO userVO = userMapper.userEntityToUserVO(userRepository.save(userEntity));
             eventPublisher.publishEvent(new OnUserRegistrationCompleteEvent(this, userVO, appUrl));
             return userVO;
@@ -129,9 +129,26 @@ public class UserService {
             return userMapper.userEntityToUserDto(edit);
         }
     }
+
+    public void forgottenPassword(AuthRequest authRequest) {
+        String appUrl = "/users/forgotten-password";
+        eventPublisher.publishEvent(new OnForgottenPasswordCompleteEvent(this,
+                appUrl, authRequest));
+    }
+
+
+    public void setNewPassword(UserForgottenPasswordDto forgottenPasswordNewPasswordDto) {
+        UserDto userDto = this.getUserByVerificationToken(this.getVerificationToken(forgottenPasswordNewPasswordDto.getVerificationToken()));
+        UserEntity user = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserNotFoundException(userDto.getId()));
+        user.setPassword(passwordEncoder.encode(forgottenPasswordNewPasswordDto.getPassword()));
+        user.setModified(LocalDateTime.now());
+        this.userRepository.save(user);
+    }
+
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
+
     public UserEntity getUserByUserEmail(String username) {
         return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
@@ -167,13 +184,20 @@ public class UserService {
     }
 
 
-      public VerificationToken getVerificationTokenByUser(UserEntity user) {
+    public VerificationToken getVerificationTokenByUser(UserEntity user) {
 
         return tokenRepository.findByUser(user).orElse(null);
     }
 
 
     public void createVerificationToken(UserVO user, String token) {
+        UserEntity userEntity = userRepository.findById(user.getId())
+                .orElseThrow(() -> new UserNotFoundException(user.getId()));
+        VerificationToken myToken = new VerificationToken(token, userEntity);
+        tokenRepository.save(myToken);
+    }
+
+    public void createVerificationToken(UserDto user, String token) {
         UserEntity userEntity = userRepository.findById(user.getId())
                 .orElseThrow(() -> new UserNotFoundException(user.getId()));
         VerificationToken myToken = new VerificationToken(token, userEntity);
@@ -195,13 +219,12 @@ public class UserService {
     public UserDto getUserByVerificationToken(VerificationToken verificationToken) {
         return userMapper.userEntityToUserDto(verificationToken.getUser());
     }
-//
-//    @Override
-//    public UserDto getUserByUserEmail(AuthRequest request) {
-//        return userMapper.userEntityToUserDto(userRepository.findByEmail(request.getUsername())
-//                .orElseThrow(() -> new UserNotFoundException(request.getUsername())));
-//    }
-//
+
+    public UserDto getUserByUserEmail(AuthRequest request) {
+        return userMapper.userEntityToUserDto(userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException(request.getUsername())));
+    }
+
 
 
     public void initRole() {
@@ -239,7 +262,6 @@ public class UserService {
         }
         return pictureUrl;
     }
-
 
 
 }
