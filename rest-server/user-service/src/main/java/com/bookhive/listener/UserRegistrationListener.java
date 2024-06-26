@@ -2,6 +2,8 @@ package com.bookhive.listener;
 
 
 import com.bookhive.event.OnUserRegistrationCompleteEvent;
+import com.bookhive.model.dto.UserDto;
+import com.bookhive.model.dto.UserVO;
 import com.bookhive.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationListener;
@@ -17,7 +19,7 @@ public class UserRegistrationListener implements
 
 
     private final UserService userService;
- //   private final UserRegistrationMailServiceImpl userRegistrationMailService;
+
 
 
 
@@ -32,11 +34,11 @@ public class UserRegistrationListener implements
     }
 
     private void confirmRegistration(OnUserRegistrationCompleteEvent event) throws  UnsupportedEncodingException {
-//        UserDto user = event.getUser();
-//
-//        String token = UUID.randomUUID().toString();
-//
-//        userService.createVerificationToken(user, token);
+        UserVO user = event.getUser();
+
+        String token = UUID.randomUUID().toString();
+
+        userService.createVerificationToken(user, token);
 //        String confirmationUrl
 //                = event.getAppUrl() + "Confirm?token=" + token;
 //        userRegistrationMailService.sendVerificationEmail(user.getFullName(),

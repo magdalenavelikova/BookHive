@@ -54,6 +54,17 @@ public class AuthService {
         return authResponse;
     }
 
+    public Object registerConfirm(String token) {
+        AuthRequest request = new AuthRequest();
+        request.setToken(token);
+        UserVO registeredUser = restTemplate.postForObject("http://user-service/users/registerConfirm", request, UserVO.class);
+        String accessToken = jwtService.generate(registeredUser.getId(), registeredUser.getUsername(), registeredUser.getRole(), "ACCESS");
+        String refreshToken = jwtService.generate(registeredUser.getId(), registeredUser.getUsername(), registeredUser.getRole(), "REFRESH");
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setAccessToken(accessToken);
+        authResponse.setRefreshToken(refreshToken);
+        return authResponse;
+    }
 
 
     static class MultipartInputStreamFileResource extends InputStreamResource {

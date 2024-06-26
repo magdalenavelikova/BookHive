@@ -22,7 +22,7 @@ public class CloudinaryService {
         String publicId = uploadImage(multipartFile);
 
         Transformation transformation = new Transformation()
-                .width(150)
+                .width(200)
                 .crop("fill").chain()
                 .radius("max").chain()
                 .fetchFormat("auto")

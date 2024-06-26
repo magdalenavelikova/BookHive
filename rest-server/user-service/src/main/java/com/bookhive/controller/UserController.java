@@ -1,6 +1,7 @@
 package com.bookhive.controller;
 
 import com.bookhive.model.dto.*;
+import com.bookhive.model.entities.VerificationToken;
 import com.bookhive.model.enums.Role;
 import com.bookhive.service.UserService;
 import jakarta.validation.Valid;
@@ -8,10 +9,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,24 +62,22 @@ public class UserController {
 //                .body(user);
 //    }
 //
-  @GetMapping("")
+    @GetMapping("")
     public ResponseEntity<List<UserDto>> getAllUsers(@RequestHeader HttpHeaders headers) {
-      String role = headers.getFirst("X-User-Role");
-      if ( Objects.requireNonNull(role).equals(Role.ADMIN.toString())
-              || role.equals(Role.MODERATOR.toString())) {
-          return ResponseEntity.ok()
-                  .body(userService.getAllUsers());
-      } else
-          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-  }
-
-
+        String role = headers.getFirst("X-User-Role");
+        if (Objects.requireNonNull(role).equals(Role.ADMIN.toString())
+                || role.equals(Role.MODERATOR.toString())) {
+            return ResponseEntity.ok()
+                    .body(userService.getAllUsers());
+        } else
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         String role = headers.getFirst("X-User-Role");
-        if ( Objects.requireNonNull(role).equals(Role.ADMIN.toString())
+        if (Objects.requireNonNull(role).equals(Role.ADMIN.toString())
                 || role.equals(Role.MODERATOR.toString())) {
             userService.deleteUser(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -99,9 +100,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserEditDto> getUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
-        //   String username = headers.getFirst("X-User-Username");
         String role = headers.getFirst("X-User-Role");
         String idHeader = headers.getFirst("X-User-Id");
         if (id.equals(Long.valueOf(Objects.requireNonNull(idHeader)))
@@ -129,8 +130,21 @@ public class UserController {
                 .body("{\"message\": \"" + messageValue + "\" }");
     }
 
+    @PostMapping("/registerConfirm")
+    public ResponseEntity<?> confirmRegistration
+            (@RequestBody @Valid ConfirmRequest request) {
+
+        VerificationToken verificationToken = userService.getVerificationToken(request.getToken());
+        ResponseEntity<String> UNAUTHORIZED = getStringResponseEntity(verificationToken);
+        if (UNAUTHORIZED != null) return UNAUTHORIZED;
+        UserDto user = userService.getUserByVerificationToken(verificationToken);
+        return ResponseEntity.ok(userService.saveRegisteredUser(user));
+    }
+
+
+//
 //    @PostMapping("/forgotten-password")
-//    public ResponseEntity<?> forgottenPassword(@RequestBody AuthRequest authRequest, ServletWebRequest request) {
+//    public ResponseEntity<?> forgottenPassword(@RequestBody AuthRequest authRequest,  @RequestHeader HttpHeaders headers) {
 //        if (isValid(authRequest) != null) {
 //            userService.forgottenPassword(authRequest, request);
 //            String messageValue = "Email was send";
@@ -156,5 +170,26 @@ public class UserController {
     public ResponseEntity<String> securedEndpoint() {
         return ResponseEntity.ok("Hello, from secured endpoint!");
     }
+
+    @Nullable
+    private static ResponseEntity<String> getStringResponseEntity(VerificationToken verificationToken) {
+        if (verificationToken == null) {
+            String messageValue = "User is disabled";
+
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(messageValue);
+        }
+
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            String messageValue = "User account has expired";
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(messageValue);
+        }
+        return null;
+    }
+
 
 }

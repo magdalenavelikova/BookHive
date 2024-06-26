@@ -24,6 +24,7 @@ public interface UserMapper {
 
     @Mapping(source = "created", target = "created", dateFormat = "dd.MM.yyyy")
     @Mapping(source = "role.role", target = "role")
+    @Mapping(source = "id", target = "id")
     UserDto userEntityToUserDto(UserEntity userEntity);
 
 }

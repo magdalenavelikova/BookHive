@@ -12,7 +12,8 @@ import java.util.function.Predicate;
         public static final List<String> openEndpoints = List.of(
                 "/auth/register",
             "/auth/login",
-                "/auth/oauth"
+                "/auth/oauth",
+               " /auth/registerConfirm"
 
 
         );

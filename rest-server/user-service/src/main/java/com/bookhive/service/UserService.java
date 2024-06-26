@@ -1,16 +1,21 @@
 package com.bookhive.service;
 
+import com.bookhive.event.OnUserRegistrationCompleteEvent;
 import com.bookhive.exception.UserLoginException;
 import com.bookhive.exception.UserNotFoundException;
 import com.bookhive.exception.UserNotUniqueException;
 import com.bookhive.model.dto.*;
 import com.bookhive.model.entities.UserEntity;
 import com.bookhive.model.entities.UserRoleEntity;
+import com.bookhive.model.entities.VerificationToken;
 import com.bookhive.model.enums.Role;
 import com.bookhive.model.mapper.UserMapper;
 import com.bookhive.repository.UserRepository;
 import com.bookhive.repository.UserRoleRepository;
+import com.bookhive.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +30,13 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class UserService {
+    private final ApplicationEventPublisher eventPublisher;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+    private final VerificationTokenRepository tokenRepository;
 
     public UserVO registerNewUserAccount(MultipartFile file, UserRegisterDto userRegisterDto, Boolean isOauth) throws IOException {
         UserEntity userEntity = userMapper.userRegisterDtoToUserEntity(userRegisterDto);
@@ -41,15 +48,18 @@ public class UserService {
         if (isOauth) {
             userEntity.setAvatar(userRegisterDto.getAvatar());
             userEntity.setEnabled(true);
+            return userMapper.userEntityToUserVO(userRepository.save(userEntity));
         } else {
             userEntity.setAvatar(getPictureUrl(file));
             userEntity.setEnabled(false);
             String rowPassword = userEntity.getPassword();
             String password = passwordEncoder.encode(rowPassword);
             userEntity.setPassword(password);
+            String appUrl =  "/users/register";
+            UserVO userVO = userMapper.userEntityToUserVO(userRepository.save(userEntity));
+            eventPublisher.publishEvent(new OnUserRegistrationCompleteEvent(this, userVO, appUrl));
+            return userVO;
         }
-
-        return userMapper.userEntityToUserVO(userRepository.save(userEntity));
 
     }
 
@@ -119,19 +129,9 @@ public class UserService {
             return userMapper.userEntityToUserDto(edit);
         }
     }
-//
-//    @Override
-//    public UserDto getUserByVerificationToken(VerificationToken verificationToken) {
-//        return userMapper.userEntityToUserDto(verificationToken.getUser());
-//    }
-//
-//    @Override
-//    public UserDto getUserByUserEmail(AuthRequest request) {
-//        return userMapper.userEntityToUserDto(userRepository.findByEmail(request.getUsername())
-//                .orElseThrow(() -> new UserNotFoundException(request.getUsername())));
-//    }
-//
-
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
     public UserEntity getUserByUserEmail(String username) {
         return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
@@ -145,7 +145,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         if (userRepository.findById(id).isPresent()) {
-            //  tokenRepository.deleteByUserId(id);
+            tokenRepository.deleteByUserId(id);
             userRepository.deleteById(id);
         } else {
             throw new UserNotFoundException(id);
@@ -165,6 +165,44 @@ public class UserService {
             return false;
         }
     }
+
+
+      public VerificationToken getVerificationTokenByUser(UserEntity user) {
+
+        return tokenRepository.findByUser(user).orElse(null);
+    }
+
+
+    public void createVerificationToken(UserVO user, String token) {
+        UserEntity userEntity = userRepository.findById(user.getId())
+                .orElseThrow(() -> new UserNotFoundException(user.getId()));
+        VerificationToken myToken = new VerificationToken(token, userEntity);
+        tokenRepository.save(myToken);
+    }
+
+
+    public UserVO saveRegisteredUser(UserDto userDto) {
+        UserEntity user = userRepository
+                .findById(userDto.getId())
+                .orElseThrow(() -> new UserNotFoundException(userDto.getId()));
+        if (user != null) {
+            user.setEnabled(true);
+            userRepository.save(user);
+        }
+        return userMapper.userEntityToUserVO(user);
+    }
+
+    public UserDto getUserByVerificationToken(VerificationToken verificationToken) {
+        return userMapper.userEntityToUserDto(verificationToken.getUser());
+    }
+//
+//    @Override
+//    public UserDto getUserByUserEmail(AuthRequest request) {
+//        return userMapper.userEntityToUserDto(userRepository.findByEmail(request.getUsername())
+//                .orElseThrow(() -> new UserNotFoundException(request.getUsername())));
+//    }
+//
+
 
     public void initRole() {
 
@@ -201,6 +239,7 @@ public class UserService {
         }
         return pictureUrl;
     }
+
 
 
 }

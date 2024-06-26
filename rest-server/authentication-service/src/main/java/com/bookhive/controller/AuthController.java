@@ -21,11 +21,11 @@ public class AuthController {
 
 
     @PostMapping(value = "/register", consumes = {"multipart/form-data"})
-        public ResponseEntity<AuthResponse> register(
-                @RequestPart("auth") AuthRequest request,
-                @RequestPart(value = "file", required = false) MultipartFile file
-                                                 ) throws IOException {
-       return ResponseEntity.ok(authService.register(file,request));
+    public ResponseEntity<AuthResponse> register(
+            @RequestPart("auth") AuthRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        return ResponseEntity.ok(authService.register(file, request));
 
     }
 
@@ -45,5 +45,12 @@ public class AuthController {
     public ResponseEntity<?> oauthLogin(@RequestBody AuthRequest request) {
         AuthResponse authResponse = this.authService.loginUserWithOAuth(request);
         return ResponseEntity.ok(authResponse);
+    }
+
+    @GetMapping("/registerConfirm")
+    public ResponseEntity<?> confirmRegistration
+            (@RequestParam("token") String token) {
+
+        return ResponseEntity.ok(authService.registerConfirm(token));
     }
 }
